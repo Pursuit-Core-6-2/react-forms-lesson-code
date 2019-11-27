@@ -6,7 +6,9 @@ class App extends React.Component {
     this.initialState = {
       usernameValue: '',
       password: '',
-      submitted: false
+      submitted: false,
+      notRobot: false,
+      title: ''
     }
 
     this.state = this.initialState
@@ -14,10 +16,13 @@ class App extends React.Component {
 
   handleFormSubmit = (event) => {
     event.preventDefault();
-    console.log('Form submitted')
-    this.setState({
-      submitted: true
-    })
+
+    if (this.allFieldsValid()) {
+      console.log('Form submitted')
+      this.setState({
+        submitted: true
+      })
+    }
   }
 
   handleUsernameChange = (event) => {
@@ -37,9 +42,38 @@ class App extends React.Component {
     this.setState(this.initialState)
   }
 
+  handleCheckboxChange = (event) => {
+    console.log('checkbox was checked or unchecked', event.target.checked)
+
+    this.setState({
+      notRobot: event.target.checked
+    })
+  }
+
+  handleSelectChange = (event) => {
+    this.setState({
+      title: event.target.value
+    })
+  }
+
+  allFieldsValid = () => {
+    return (
+      this.state.notRobot &&
+      this.state.title &&
+      this.state.usernameValue &&
+      this.state.password
+    );
+  }
+
   render() {
     console.log(this.state)
-    const { usernameValue, password, submitted } = this.state;
+    const {
+      usernameValue,
+      password,
+      submitted,
+      notRobot,
+      title
+    } = this.state;
 
     if (submitted) {
       return (
@@ -52,12 +86,28 @@ class App extends React.Component {
     return (
       <div className="App">
         <h1> Forms with React </h1>
+
         <form onSubmit={this.handleFormSubmit}>
+
+          <label htmlFor='title'>Title: </label>
+          <select
+            id='title'
+            onChange={this.handleSelectChange}
+            value={title}
+          >
+            <option value="">None</option>
+            <option value='mr'>Mr.</option>
+            <option value='ms'>Ms.</option>
+            <option value='mrs'>Mrs.</option>
+            <option value='mx'>Mx.</option>
+            <option value='dr'>Dr.</option>
+          </select>
+
           <input
             type="text"
             placeholder="username"
-            value={usernameValue}
             onChange={this.handleUsernameChange}
+            value={usernameValue}
           />
           <input
             type="password"
@@ -65,6 +115,26 @@ class App extends React.Component {
             value={password}
             onChange={this.handlePasswordChange}
           />
+          {/* 
+          Label wrapping checkbox. Makes it so that clicking the
+          lable checks/unchecks the checkbox
+          <label> I'm not a robot
+            <input
+              type="checkbox"
+              onChange={this.handleCheckboxChange}
+              checked={notRobot}
+            ></input>
+          </label> 
+          */}
+          <label htmlFor='not-robot'> I'm not a robot </label>
+          <input
+            id='not-robot'
+            type="checkbox"
+            onChange={this.handleCheckboxChange}
+            checked={notRobot}
+          ></input>
+
+
           <button>Send</button>
           <button
             onClick={this.resetForm}
@@ -72,7 +142,7 @@ class App extends React.Component {
             Reset
           </button>
         </form>
-      </div>
+      </div >
     )
   }
 }
